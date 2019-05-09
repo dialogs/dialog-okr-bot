@@ -13,6 +13,10 @@ class GtmHubApi:
             'gtmhub-accountId': self.account
         }
         response = requests.get(self.url + '/assignees', headers=headers)
+
+        if response.status_code != 200:
+            raise Exception('GtmHub error response "' + response.text + '" with code : ' + str(response.status_code))
+
         return response.json()
 
     def list_sessions(self):
@@ -21,6 +25,10 @@ class GtmHubApi:
             'gtmhub-accountId': self.account
         }
         response = requests.get(self.url + '/sessions', headers=headers)
+
+        if response.status_code != 200:
+            raise Exception('GtmHub error response "' + response.text + '"with code : ' + str(response.status_code))
+
         return response.json()
 
     def list_okr(self, list_id, user_id):
@@ -34,6 +42,10 @@ class GtmHubApi:
             'gtmhub-accountId': self.account
         }
         response = requests.get(self.url+'/goals', headers=headers, params=query)
+
+        if response.status_code != 200:
+            raise Exception('GtmHub error response "' + response.text + '"with code : ' + str(response.status_code))
+
         return response.json()
 
     def get_metric_with_goal(self, metric_id):
@@ -48,6 +60,10 @@ class GtmHubApi:
             'gtmhub-accountId': self.account
         }
         response = requests.get(self.url + '/metrics/' + metric_id, headers=headers)
+
+        if response.status_code != 200:
+            raise Exception('GtmHub error response "' + response.text + '"with code : ' + str(response.status_code))
+
         return response.json()
 
     def get_goal(self, goal_id):
@@ -56,6 +72,10 @@ class GtmHubApi:
             'gtmhub-accountId': self.account
         }
         response = requests.get(self.url + '/goals/' + goal_id, headers=headers)
+
+        if response.status_code != 200:
+            raise Exception('GtmHub error response "' + response.text + '"with code : ' + str(response.status_code))
+
         return response.json()
 
     def get_account(self, account_id):
@@ -64,6 +84,10 @@ class GtmHubApi:
             'gtmhub-accountId': self.account
         }
         response = requests.get(self.url + '/accounts/' + account_id, headers=headers)
+
+        if response.status_code != 201:
+            raise Exception('GtmHub error response "' + response.text + '"with code : ' + str(response.status_code))
+
         return response.json()
 
     def update_okr(self, metric_id, new_value, comment, confidence_level):
@@ -77,4 +101,8 @@ class GtmHubApi:
             'gtmhub-accountId': self.account
         }
         response = requests.post(self.url+'/metrics/'+metric_id+'/checkin', headers=headers, json=data)
+
+        if response.status_code != 201:
+            raise Exception('GtmHub error response "'+response.text+'"with code : '+str(response.status_code))
+
         return response.json()

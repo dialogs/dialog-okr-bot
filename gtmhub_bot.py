@@ -173,17 +173,20 @@ def on_interact(*params):
 
 
 if __name__ == '__main__':
-    config = parse_config()
+    try:
+        config = parse_config()
 
-    gtmhub_config = config['gtmhubConfig']
-    dialog_config = config['dialogConfig']
+        gtmhub_config = config['gtmhubConfig']
+        dialog_config = config['dialogConfig']
 
-    handler = GtmHubMetricHandler(gtmhub_config['url'], gtmhub_config['token'], gtmhub_config['account'])
+        handler = GtmHubMetricHandler(gtmhub_config['url'], gtmhub_config['token'], gtmhub_config['account'])
 
-    bot = DialogBot.get_secure_bot(
-        dialog_config['host']+':'+dialog_config['port'],
-        grpc.ssl_channel_credentials(),
-        dialog_config['token']
-    )
+        bot = DialogBot.get_secure_bot(
+            dialog_config['host']+':'+dialog_config['port'],
+            grpc.ssl_channel_credentials(),
+            dialog_config['token']
+        )
 
-    bot.messaging.on_message(on_message, on_interact)
+        bot.messaging.on_message(on_message, on_interact)
+    except Exception as ex:
+        print('Error initializing the bot - '+str(ex))
