@@ -190,3 +190,4 @@ if __name__ == '__main__':
         bot.messaging.on_message(on_message, on_interact)
     except Exception as ex:
         print('Error initializing the bot - '+str(ex))
+        raise ex
