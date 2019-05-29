@@ -34,13 +34,16 @@ class GtmHubApi:
     def list_okr(self, list_id, user_id):
         query = {
             'includeMetrics': True,
-            'ownerIds': user_id,
-            'sessionId': list_id
+            'ownerIds': user_id
         }
         headers = {
             'Authorization': 'Bearer '+self.token,
             'gtmhub-accountId': self.account
         }
+
+        if list_id is not None:
+            query['sessionId'] = list_id
+
         response = requests.get(self.url+'/goals', headers=headers, params=query)
 
         if response.status_code != 200:

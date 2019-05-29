@@ -39,7 +39,7 @@ class GtmHubMetricHandler:
 
     def get_okr_list(self, list_name, user_name):
         user_id = self.bot_account_id
-        list_id = 'none'
+        list_id = None
 
         if user_name is not None:
             user_id = self.get_user_id(user_name)
