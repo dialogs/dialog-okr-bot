@@ -21,16 +21,21 @@ class GtmHubMetricHandler:
                 return user['id']
 
     def get_user_id(self, username):
+        available_usernames = ''
         for user in self.users:
-            if user['name'] == username and user['type'] == 'user':
-                return user['id']
-        raise InputException('Invalid username')
+            if user['type'] == 'user':
+                available_usernames += '\n - '+user['name']
+                if user['name'] == username:
+                    return user['id']
+        raise InputException('Invalid username\nAvailable usernames :'+available_usernames)
 
     def get_list_id(self, list_name):
+        available_lists = ''
         for session in self.sessions:
+            available_lists = '\n'+session['title']
             if session['title'] == list_name:
                 return session['id']
-        raise InputException('Invalid list name')
+        raise InputException('Invalid list name\nAvailable lists :'+available_lists)
 
     def get_okr_list(self, list_name, user_name):
         user_id = self.bot_account_id
