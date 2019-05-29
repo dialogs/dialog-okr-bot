@@ -43,14 +43,17 @@ def is_cancel_text_command(text):
 
 
 def print_okr_list(peer, okr_list):
-    for okr in okr_list:
-        for metric in okr['metrics']:
-            button = InteractiveMediaButton(metric['id'], 'Refresh')
-            action = InteractiveMedia('create', button)
-            group = InteractiveMediaGroup([action])
-            objective_text = '['+okr['name']+']('+okr['url']+') - '+str(int(round(okr['attainment']*100)))+'%'
-            metric_text = '['+metric['name']+']('+okr['url']+'metric/'+metric['id']+'/) - '+str(metric['actual'])+' - * '+str(int(round(metric['attainment']*100)))+'% *'
-            bot.messaging.send_message(peer, objective_text+'\n'+metric_text, [group])
+    if not okr_list:
+        bot.messaging.send_message(peer, "There are no available OKR's with the specified parameters")
+    else:
+        for okr in okr_list:
+            for metric in okr['metrics']:
+                button = InteractiveMediaButton(metric['id'], 'Refresh')
+                action = InteractiveMedia('create', button)
+                group = InteractiveMediaGroup([action])
+                objective_text = '['+okr['name']+']('+okr['url']+') - '+str(int(round(okr['attainment']*100)))+'%'
+                metric_text = '['+metric['name']+']('+okr['url']+'metric/'+metric['id']+'/) - '+str(metric['actual'])+' - * '+str(int(round(metric['attainment']*100)))+'% *'
+                bot.messaging.send_message(peer, objective_text+'\n'+metric_text, [group])
 
 
 def print_okr_info(peer, okr_info):
