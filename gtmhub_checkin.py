@@ -13,8 +13,12 @@ class GtmHubCheckin:
         self.title = metric_with_goal['name']
         self.current_value = metric_with_goal['actual']
         self.target_value = metric_with_goal['target']
-        self.current_confidence = metric_with_goal['confidence']['value']
         self.url = metric_with_goal['goal']['url']+'metric/'+metric_with_goal['id']+'/'
+
+        self.current_confidence = 0.0
+
+        if 'confidence' in metric_with_goal and 'value' in metric_with_goal['confidence']:
+            self.current_confidence = metric_with_goal['confidence']['value']
 
         self.confidence_base_one = isinstance(self.current_confidence, float)
 
