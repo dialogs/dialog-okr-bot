@@ -34,8 +34,7 @@ class GtmHubCheckin:
             GtmHubCheckin.parse_text(value)
             self.new_comment = value
         elif self.state == GtmHubCheckin.STATES.COMMENTED:
-            self.parse_confidence(value)
-            self.new_confidence = value
+            self.new_confidence = self.parse_confidence(value)
         else:
             raise InputException('Checkin is already completed')
 
