@@ -104,43 +104,45 @@ def print_error(peer, error):
 def on_message(*params):
     peer = params[0].peer
     message = params[0].message
+    sender_uid = params[0].sender_uid
 
-    try:
-        if not hasattr(message, 'textMessage'):
-            raise InputException('Invalid input value, only text messages are allowed')
+    if peer.id == sender_uid:
+        try:
+            if not hasattr(message, 'textMessage'):
+                raise InputException('Invalid input value, only text messages are allowed')
 
-        text = message.textMessage.text
+            text = message.textMessage.text
 
-        if handler.has_checkin(peer.id):
-            if is_cancel_text_command(text):
-                handler.cancel_checkin(peer.id)
-                print_update_canceled(peer)
-            else:
-                handler.update_checkin(peer.id, text)
-                checkin_current_state = handler.get_checkin_state(peer.id)
-                if checkin_current_state == GtmHubCheckin.STATES.INITIALIZED:
-                    print_need_changes_info(peer)
-                elif checkin_current_state == GtmHubCheckin.STATES.COMMENTED:
-                    confidence_levels = handler.get_confidence_levels(peer.id)
-                    print_need_confidence_level(peer, confidence_levels)
+            if handler.has_checkin(peer.id):
+                if is_cancel_text_command(text):
+                    handler.cancel_checkin(peer.id)
+                    print_update_canceled(peer)
                 else:
-                    raise Exception('Unexpected checkin state')
-        else:
-            command_params = parse_okr_command(text)
+                    handler.update_checkin(peer.id, text)
+                    checkin_current_state = handler.get_checkin_state(peer.id)
+                    if checkin_current_state == GtmHubCheckin.STATES.INITIALIZED:
+                        print_need_changes_info(peer)
+                    elif checkin_current_state == GtmHubCheckin.STATES.COMMENTED:
+                        confidence_levels = handler.get_confidence_levels(peer.id)
+                        print_need_confidence_level(peer, confidence_levels)
+                    else:
+                        raise Exception('Unexpected checkin state')
+            else:
+                command_params = parse_okr_command(text)
 
-            username = command_params.get('username', None)
-            list_name = command_params.get('list_name', None)
+                username = command_params.get('username', None)
+                list_name = command_params.get('list_name', None)
 
-            okr_list = handler.get_okr_list(list_name, username)
+                okr_list = handler.get_okr_list(list_name, username)
 
-            print_okr_list(peer, okr_list)
+                print_okr_list(peer, okr_list)
 
-    except InputException as exception:
-        print(exception)
-        print_error(peer, str(exception))
-    except Exception as exception:
-        print(exception)
-        print_error(peer, 'Some internal error happens')
+        except InputException as exception:
+            print(exception)
+            print_error(peer, str(exception))
+        except Exception as exception:
+            print(exception)
+            print_error(peer, 'Some internal error happens')
 
 
 def on_interact(*params):
