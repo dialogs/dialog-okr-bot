@@ -20,7 +20,7 @@ class TestGtmhubApi(unittest.TestCase):
     def test_user_list(self):
         users = TestGtmhubApi.API.list_users()
         self.assertTrue('items' in users)
-        self.assertTrue(len(users['items']) == 1)
+        self.assertTrue(len(users['items']) == 2)
 
     def test_sessions_list(self):
         sessions = TestGtmhubApi.API.list_sessions()
@@ -28,10 +28,16 @@ class TestGtmhubApi(unittest.TestCase):
         self.assertTrue(len(sessions['items']) == 2)
 
     def test_okr_list(self):
-        own_id = TestGtmhubApi.CONFIG['account']
-        self.assertTrue(len(TestGtmhubApi.API.list_okr(None, own_id)['items']) == 4)
-        self.assertTrue(len(TestGtmhubApi.API.list_okr('5d0b9a855888740001054d9f', own_id)['items']) == 3)
-        self.assertTrue(len(TestGtmhubApi.API.list_okr('5d0d4195fd391a0001f7faa8', own_id)['items']) == 1)
+        own_id = '5d0b9a855888740001054d9d'
+        boty_id = '5d10904a5888740001055320'
+        q2_season_id = '5d0b9a855888740001054d9f'
+        q3_season_id = '5d0d4195fd391a0001f7faa8'
+        self.assertEqual(len(TestGtmhubApi.API.list_okr(None, own_id)['items']), 4)
+        self.assertEqual(len(TestGtmhubApi.API.list_okr(q2_season_id, own_id)['items']), 3)
+        self.assertEqual(len(TestGtmhubApi.API.list_okr(q3_season_id, own_id)['items']), 1)
+        self.assertEqual(len(TestGtmhubApi.API.list_okr(None, boty_id)['items']), 1)
+        self.assertEqual(len(TestGtmhubApi.API.list_okr(q2_season_id, boty_id)['items']), 1)
+        self.assertEqual(len(TestGtmhubApi.API.list_okr(q3_season_id, boty_id)['items']), 0)
 
     def test_get_metric(self):
         metric = TestGtmhubApi.API.get_metric('5d0d9a6afd391a0001f7fb44')

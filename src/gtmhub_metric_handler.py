@@ -26,6 +26,7 @@ class GtmHubMetricHandler:
     def get_bot_user_id(self):
         for user in self.users:
             if user['accountId'] == self.bot_account_id and user['type'] == 'user':
+                print(user['name'])
                 return user['id']
 
     def get_user_id(self, username):
@@ -46,7 +47,7 @@ class GtmHubMetricHandler:
         raise InputException(_('Invalid list name\nAvailable lists : {}').format(available_lists))
 
     def get_okr_list(self, list_name=None, user_name=None):
-        user_id = self.bot_account_id
+        user_id = None
         list_id = None
 
         if user_name is not None:
@@ -60,10 +61,11 @@ class GtmHubMetricHandler:
         for okr in okr_by_project:
             if okr['metricsCount'] > 0:
                 for metric in okr['metrics']:
-                    metric['project_name'] = okr['name']
-                    metric['project_url'] = okr['url']
-                    metric['project_attainment'] = okr['attainment']
-                    okr_list[metric['id']] = metric
+                    if user_name is None or user_id == metric['ownerId']:
+                        metric['project_name'] = okr['name']
+                        metric['project_url'] = okr['url']
+                        metric['project_attainment'] = okr['attainment']
+                        okr_list[metric['id']] = metric
 
         return okr_list
 

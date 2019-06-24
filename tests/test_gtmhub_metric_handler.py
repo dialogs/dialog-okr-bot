@@ -21,9 +21,16 @@ class TestGtmhubMetricHandler(unittest.TestCase):
     def test_empty_instance(self):
         self.assertFalse(TestGtmhubMetricHandler.HANDLER.has_checkin(1))
         self.assertFalse(TestGtmhubMetricHandler.HANDLER.has_overview(1))
-        self.assertEqual(TestGtmhubMetricHandler.HANDLER.get_bot_user_id(), '5d0b9a855888740001054d9d')
+        self.assertEqual(TestGtmhubMetricHandler.HANDLER.get_bot_user_id(), '5d10904a5888740001055320')
         self.assertEqual(TestGtmhubMetricHandler.HANDLER.get_list_id('Q2 2019'), '5d0b9a855888740001054d9f')
         self.assertEqual(TestGtmhubMetricHandler.HANDLER.get_user_id('tony tony'), '5d0b9a855888740001054d9d')
+        self.assertEqual(TestGtmhubMetricHandler.HANDLER.get_user_id('boty bot'), '5d10904a5888740001055320')
+        self.assertEqual(len(TestGtmhubMetricHandler.HANDLER.get_okr_list()), 7)
+        self.assertEqual(len(TestGtmhubMetricHandler.HANDLER.get_okr_list(None, 'tony tony')), 6)
+        self.assertEqual(len(TestGtmhubMetricHandler.HANDLER.get_okr_list('Q2 2019', None)), 6)
+        self.assertEqual(len(TestGtmhubMetricHandler.HANDLER.get_okr_list('Q2 2019', 'tony tony')), 5)
+        self.assertEqual(len(TestGtmhubMetricHandler.HANDLER.get_okr_list(None, 'boty bot')), 1)
+        self.assertEqual(len(TestGtmhubMetricHandler.HANDLER.get_okr_list('Q3 2019', 'boty bot')), 0)
 
         with self.assertRaises(InputException):
             TestGtmhubMetricHandler.HANDLER.get_list_id('unknown')
@@ -80,6 +87,7 @@ class TestGtmhubMetricHandler(unittest.TestCase):
             ('35', 'Just a test comment', '0.7', 25),
             ('40', 'Just a test comment', '0.6', 50),
             ('57', 'Just a test comment', '0.8', 41),
+            ('75', 'Just a test comment', '0.6', 21),
             ('225', 'Just a test comment', '0.8', 47),
             ('9100', 'Just a test comment', '0.9', 60),
             ('2500', 'Just a test comment', '0.6', 14)
@@ -109,6 +117,7 @@ class TestGtmhubMetricHandler(unittest.TestCase):
             ('22', 'Initial test value', '0.8', 3),
             ('19', 'Initial test value', '0.8', 20),
             ('32', 'Initial test value', '0.7', 7),
+            ('68', 'Just a test comment', '0.7', 17),
             ('199', 'Initial test value', '0.8', 20),
             ('9500', 'Initial test value', '0.8', 33),
             ('1200', 'Initial test value', '0.8', 7)

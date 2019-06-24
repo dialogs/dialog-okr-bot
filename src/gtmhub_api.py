@@ -32,16 +32,17 @@ class GtmHubApi:
 
         return response.json()
 
-    def list_okr(self, list_id, user_id):
+    def list_okr(self, list_id=None, user_id=None):
         query = {
             'includeMetrics': True,
-            'metricOwnerIds': user_id
         }
         headers = {
             'Authorization': 'Bearer '+self.token,
             'gtmhub-accountId': self.account
         }
 
+        if user_id is not None:
+            query['metricOwnerId'] = user_id
         if list_id is not None:
             query['sessionId'] = list_id
 
