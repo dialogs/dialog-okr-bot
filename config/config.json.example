@@ -1,0 +1,12 @@
+{
+  "dialogConfig": {
+    "host": "grpc-test.transmit.im",
+    "port": "9443",
+    "token": "YOUR_DIALOG_TOKEN"
+  },
+  "gtmhubConfig": {
+    "url": "https://app.us.gtmhub.com/api/v1",
+    "token": "YOUR_GTMHUB_TOKEN",
+    "account": "YOUR_GTMHUB_ACCOUNT_ID"
+  }
+}
