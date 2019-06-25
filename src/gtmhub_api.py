@@ -1,3 +1,4 @@
+from src.translator import _
 import requests
 
 
@@ -15,7 +16,7 @@ class GtmHubApi:
         response = requests.get(self.url + '/assignees', headers=headers)
 
         if response.status_code != 200:
-            raise Exception('GtmHub error response "' + response.text + '" with code : ' + str(response.status_code))
+            raise Exception(_('GtmHub error response "{}" with code : {}').format(response.text, response.status_code))
 
         return response.json()
 
@@ -27,27 +28,28 @@ class GtmHubApi:
         response = requests.get(self.url + '/sessions', headers=headers)
 
         if response.status_code != 200:
-            raise Exception('GtmHub error response "' + response.text + '"with code : ' + str(response.status_code))
+            raise Exception(_('GtmHub error response "{}" with code : {}').format(response.text, response.status_code))
 
         return response.json()
 
-    def list_okr(self, list_id, user_id):
+    def list_okr(self, list_id=None, user_id=None):
         query = {
             'includeMetrics': True,
-            'ownerIds': user_id
         }
         headers = {
             'Authorization': 'Bearer '+self.token,
             'gtmhub-accountId': self.account
         }
 
+        if user_id is not None:
+            query['metricOwnerId'] = user_id
         if list_id is not None:
             query['sessionId'] = list_id
 
         response = requests.get(self.url+'/goals', headers=headers, params=query)
 
         if response.status_code != 200:
-            raise Exception('GtmHub error response "' + response.text + '"with code : ' + str(response.status_code))
+            raise Exception(_('GtmHub error response "{}" with code : {}').format(response.text, response.status_code))
 
         return response.json()
 
@@ -65,19 +67,22 @@ class GtmHubApi:
         response = requests.get(self.url + '/metrics/' + metric_id, headers=headers)
 
         if response.status_code != 200:
-            raise Exception('GtmHub error response "' + response.text + '"with code : ' + str(response.status_code))
+            raise Exception(_('GtmHub error response "{}" with code : {}').format(response.text, response.status_code))
 
         return response.json()
 
     def get_goal(self, goal_id):
+        query = {
+            'fields': 'url'
+        }
         headers = {
             'Authorization': 'Bearer ' + self.token,
             'gtmhub-accountId': self.account
         }
-        response = requests.get(self.url + '/goals/' + goal_id, headers=headers)
+        response = requests.get(self.url + '/goals/' + goal_id, headers=headers, params=query)
 
         if response.status_code != 200:
-            raise Exception('GtmHub error response "' + response.text + '"with code : ' + str(response.status_code))
+            raise Exception(_('GtmHub error response "{}" with code : {}').format(response.text, response.status_code))
 
         return response.json()
 
@@ -89,7 +94,7 @@ class GtmHubApi:
         response = requests.get(self.url + '/accounts/' + account_id, headers=headers)
 
         if response.status_code != 201:
-            raise Exception('GtmHub error response "' + response.text + '"with code : ' + str(response.status_code))
+            raise Exception(_('GtmHub error response "{}" with code : {}').format(response.text, response.status_code))
 
         return response.json()
 
@@ -106,6 +111,6 @@ class GtmHubApi:
         response = requests.post(self.url+'/metrics/'+metric_id+'/checkin', headers=headers, json=data)
 
         if response.status_code != 201:
-            raise Exception('GtmHub error response "'+response.text+'"with code : '+str(response.status_code))
+            raise Exception(_('GtmHub error response "{}" with code : {}').format(response.text, response.status_code))
 
         return response.json()

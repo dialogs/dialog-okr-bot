@@ -1,5 +1,6 @@
-from input_exception import InputException
-import re
+from src.input_exception import InputException
+from src.translator import _
+
 
 def enum(**enums):
     return type('Enum', (), enums)
@@ -12,6 +13,7 @@ class GtmHubCheckin:
         self.id = metric_with_goal['id']
         self.title = metric_with_goal['name']
         self.current_value = metric_with_goal['actual']
+        self.initial_value = metric_with_goal['initialValue']
         self.target_value = metric_with_goal['target']
         self.url = metric_with_goal['goal']['url']+'metric/'+metric_with_goal['id']+'/'
 
@@ -36,7 +38,7 @@ class GtmHubCheckin:
         elif self.state == GtmHubCheckin.STATES.COMMENTED:
             self.new_confidence = self.parse_confidence(value)
         else:
-            raise InputException('Checkin is already completed')
+            raise InputException(_('Checkin is already completed'))
 
         self.state += 1
 
@@ -45,12 +47,12 @@ class GtmHubCheckin:
         try:
             return float(value)
         except ValueError:
-            raise InputException('Invalid numeric value')
+            raise InputException(_('Invalid numeric value'))
 
     @staticmethod
     def parse_text(value):
         if not value:
-            raise InputException('Invalid empty text')
+            raise InputException(_('Invalid empty text'))
         return value
 
     def parse_confidence(self, value):
@@ -62,7 +64,7 @@ class GtmHubCheckin:
             if parsed_value not in self.get_confidence_levels():
                 raise Exception()
         except Exception:
-            raise InputException('Invalid confidence level')
+            raise InputException(_('Invalid confidence level'))
         return parsed_value
 
     def get_confidence_levels(self):
@@ -80,11 +82,13 @@ class GtmHubCheckin:
         }
 
     def get_preview_info(self):
+        target_improvement = self.target_value - self.initial_value
+        current_improvement = self.new_value - self.initial_value
         return {
             'id': self.id,
             'title': self.title,
             'link': self.url,
-            'new_percentage': round((self.new_value / self.target_value) * 100)
+            'new_percentage': round((current_improvement / target_improvement) * 100)
         }
 
     def get_update_info(self):
