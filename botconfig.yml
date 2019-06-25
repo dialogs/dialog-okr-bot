@@ -12,11 +12,6 @@ spec:
         app: $IMAGE_NAME
     spec:
       containers:
-        - name: nginx
+        - name: $IMAGE_NAME
           image: $COMPANY_NAME/$IMAGE_NAME
           command: ["python3", "/gtmhub_bot/gtmhub_bot.py"]
-          env:
-            - name: BOT_TOKEN
-              value: $BOT_TOKEN
-            - name: BOT_ENDPOINT
-              value: $BOT_ENDPOINT
