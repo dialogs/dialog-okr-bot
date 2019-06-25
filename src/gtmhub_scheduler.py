@@ -23,9 +23,10 @@ class GtmHubScheduler(threading.Thread):
         '6': _('Sunday')
     }
 
-    def __init__(self, callback):
+    def __init__(self, allowed_usernames, callback):
         threading.Thread.__init__(self)
         self.crons = {}
+        self.allowed_usernames = allowed_usernames
         self.callback = callback
         self.loop = asyncio.get_event_loop()
         self.scheduler = Scheduler(loop=self.loop)
@@ -46,6 +47,9 @@ class GtmHubScheduler(threading.Thread):
             return True
         except ValueError:
             return False
+
+    def is_valid_username(self, username):
+        return username in self.allowed_usernames
 
     def has_cron(self, peer_id):
         return peer_id in self.crons.keys()
@@ -68,16 +72,21 @@ class GtmHubScheduler(threading.Thread):
             if not GtmHubScheduler.is_valid_day(value):
                 raise InputException(_('Invalid day'))
             self.crons[peer_id].day = value
-        else:
+        elif self.crons[peer_id].hour is None:
             if not GtmHubScheduler.is_valid_hour(value):
                 raise InputException(_('Invalid hour'))
             self.crons[peer_id].hour = value
+        else:
+            if not self.is_valid_username(value):
+                raise InputException(_('Invalid username\nAvailable usernames : {}').format('\n'+'\n'.join(self.allowed_usernames)))
+            self.crons[peer_id].username = value
 
     def enable_cron(self, peer_id):
         day = int(self.crons[peer_id].day)
         hour = self.crons[peer_id].hour
+        username = self.crons[peer_id].username
 
-        job = CronJob(name=peer_id, loop=self.loop).weekday(day).at(hour).go(self.callback, peer_id)
+        job = CronJob(name=peer_id, loop=self.loop).weekday(day).at(hour).go(self.callback, peer_id, username)
 
         self.scheduler.add_job(job)
 
@@ -95,6 +104,7 @@ class Cron:
         self.peer_id = peer_id
         self.day = None
         self.hour = None
+        self.username = None
 
     def is_configured(self):
-        return self.day is not None and self.hour is not None
+        return self.day is not None and self.hour is not None and self.username is not None

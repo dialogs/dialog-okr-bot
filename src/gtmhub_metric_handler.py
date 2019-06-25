@@ -29,6 +29,13 @@ class GtmHubMetricHandler:
                 print(user['name'])
                 return user['id']
 
+    def get_usernames_list(self):
+        usernames_list = []
+        for user in self.users:
+            if user['type'] == 'user':
+                usernames_list.append(user['name'])
+        return usernames_list
+
     def get_user_id(self, username):
         available_usernames = ''
         for user in self.users:
@@ -104,14 +111,14 @@ class GtmHubMetricHandler:
 
         self.checkins[peer_id] = GtmHubCheckin(metric)
 
-    def create_overview(self, peer_id):
+    def create_overview(self, peer_id, list_name=None, username=None):
         if self.has_checkin(peer_id):
             raise InputException(_('You have a checkin currently, please finish it before'))
 
         if self.has_overview(peer_id):
             raise InputException(_('You have a overview currently'))
 
-        overview = self.get_okr_list()
+        overview = self.get_okr_list(list_name, username)
 
         if len(overview) == 0:
             raise InputException(_("You have not OKR's to overview"))

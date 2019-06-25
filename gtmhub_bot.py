@@ -18,10 +18,10 @@ def parse_config():
         return json.load(json_file)
 
 
-def parse_okr_command(text):
+def parse_command_params(command, text):
     username_mark = '\[\[(.+?)\]\]'
     listname_mark = '\(\((.+?)\)\)'
-    regexp = '^\/'+_('okr')+'( '+username_mark+'( '+listname_mark+')?| '+listname_mark+'( '+username_mark+')?)?$'
+    regexp = '^\/'+command+'( '+username_mark+'( '+listname_mark+')?| '+listname_mark+'( '+username_mark+')?)?$'
 
     if not re.match(regexp, text):
         raise InputException(_('Invalid command'))
@@ -53,11 +53,11 @@ def is_okr_text_command(text):
 
 
 def is_cancel_text_command(text):
-    return re.match('^/'+_('stop$')+'$', text)
+    return re.match('^/'+_('stop')+'$', text)
 
 
 def is_overview_text_command(text):
-    return re.match('^/'+_('overview$')+'$', text)
+    return re.match('^/'+_('overview'), text)
 
 
 def print_okr_list(peer, okr_list):
@@ -87,6 +87,10 @@ def print_need_changes_info(peer):
 
 def print_need_scheduler_hour(peer):
     bot.messaging.send_message(peer, _('Ok, now please reply with time in 16:40 format by Moscow timezone for me to know when to start'))
+
+
+def print_need_scheduler_username(peer):
+    bot.messaging.send_message(peer, _('Tell me what user you will be overviewing'))
 
 
 def print_need_confidence_level(peer, confidence_levels):
@@ -154,7 +158,7 @@ def print_error(peer, error):
 #   BOT CALLBACKS
 
 
-def scheduled_overview(peer_id):
+def scheduled_overview(peer_id, username):
 
     print('Running scheduled overview '+str(peer_id))
 
@@ -164,7 +168,7 @@ def scheduled_overview(peer_id):
         print_message(peer, _("It's time to update your OKRs. but seems you have some pendant works, after finish it you can run /overview command"))
     else:
         try:
-            handler.create_overview(peer.id)
+            handler.create_overview(peer.id, None, username)
             print_message(peer, _("It's time to update your OKRs. Ok, let's go"))
             print_okr_list(peer, handler.overviews[peer.id])
         except InputException as ex:
@@ -201,7 +205,13 @@ def on_message(*params):
             elif is_overview_text_command(text):
                 if scheduler.need_params(peer.id):
                     raise InputException(_('Please, finish your reminder configuration, or cancel it, before continue'))
-                handler.create_overview(peer.id)
+
+                command_params = parse_command_params(_('overview'), text)
+
+                username = command_params.get('username', None)
+                list_name = command_params.get('list_name', None)
+
+                handler.create_overview(peer.id, list_name, username)
                 print_okr_list(peer, handler.overviews[peer.id])
             elif is_okr_text_command(text):
                 if scheduler.need_params(peer.id):
@@ -211,7 +221,7 @@ def on_message(*params):
                 if handler.has_overview(peer.id):
                     raise InputException(_("Please, finish you overview, or cancel it, before continue"))
 
-                command_params = parse_okr_command(text)
+                command_params = parse_command_params(_('okr'), text)
 
                 username = command_params.get('username', None)
                 list_name = command_params.get('list_name', None)
@@ -250,7 +260,10 @@ def on_message(*params):
                         hour = scheduler.crons[peer.id].hour
                         print_message(peer, _("Ok, then each {} at {} I will start updating okr's with you.").format(day, hour))
                     else:
-                        print_need_scheduler_hour(peer)
+                        if scheduler.crons[peer.id].hour is None:
+                            print_need_scheduler_hour(peer)
+                        else:
+                            print_need_scheduler_username(peer)
                 else:
                     raise InputException(_('Invalid command'))
 
@@ -328,7 +341,7 @@ if __name__ == '__main__':
 
         handler = GtmHubMetricHandler(gtmhub_config['url'], gtmhub_config['token'], gtmhub_config['account'])
 
-        scheduler = GtmHubScheduler(scheduled_overview)
+        scheduler = GtmHubScheduler(handler.get_usernames_list(), scheduled_overview)
 
         bot = DialogBot.get_secure_bot(
             dialog_config['host']+':'+dialog_config['port'],
