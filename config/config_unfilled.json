@@ -1,0 +1,12 @@
+{
+  "dialogConfig": {
+    "host": "$BOT_ENDPOINT",
+    "port": "443",
+    "token": "$BOT_TOKEN"
+  },
+  "gtmhubConfig": {
+    "url": "$GTMHUB_ENDPOINT",
+    "token": "$GTMHUB_TOKEN",
+    "account": "$GTMHUB_ACCOUNT"
+  }
+}

@@ -36,9 +36,10 @@ jobs:
                     mkdir -p ~/.kube
                     envsubst < kubeconfig.yml > ~/.kube/config
             - run:
-                name: Make kube deploy config
+                name: Make configs
                 command: |
                     envsubst < botconfig.yml > botconfig_out.yml
+                    envsubst < ./config/config_unfilled.json > ./config/config.json
             - run:
                 name: Deploy to DigitalOcean
                 command: ./kubectl apply -f botconfig_out.yml
