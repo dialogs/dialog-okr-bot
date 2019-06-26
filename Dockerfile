@@ -1,9 +1,11 @@
 FROM python:3.7
 
-WORKDIR "/gtmhub_bot"
+ENV LIBRARY_PATH=/lib:/usr/lib
 
-COPY . /gtmhub_bot
+WORKDIR "/tmp"
+
+COPY . /tmp
 
 RUN python3 -m pip install dialog-bot-sdk requests grpcio async_cron
 
-CMD [ "python3", "/gtmhub_bot/gtmhub_bot.py" ]
+CMD [ "python3", "/tmp/gtmhub_bot.py" ]
