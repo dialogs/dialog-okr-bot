@@ -7,6 +7,10 @@ jobs:
             - checkout
             - setup_remote_docker
             - run:
+                name: Install envsubst
+                command: |
+                    sudo apt-get update && sudo apt-get -y install gettext-base
+            - run:
                 name: Write config
                 command: envsubst < ./config/config_unfilled.json > ./config/config.json
             - run:
