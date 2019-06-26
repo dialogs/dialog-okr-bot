@@ -39,7 +39,7 @@ jobs:
                 name: Make configs
                 command: |
                     envsubst < botconfig.yml > botconfig_out.yml
-                    envsubst < ./config/config_unfilled.json > ./config/config.json
+                    envsubst < config/config_unfilled.json > config/config.json
             - run:
                 name: Deploy to DigitalOcean
                 command: ./kubectl apply -f botconfig_out.yml
